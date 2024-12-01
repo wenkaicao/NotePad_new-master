@@ -6,4 +6,7 @@
           android:title="@string/menu_copy" />
     <item android:id="@+id/context_delete"
           android:title="@string/menu_delete" />
+    <item android:id="@+id/background"
+          android:title="Backgrounf"
+        />
 </menu>

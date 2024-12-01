@@ -12,5 +12,11 @@
           android:icon="@drawable/ic_menu_delete"
           android:title="@string/menu_delete"
           android:showAsAction="ifRoom|withText" />
+    <item android:id="@+id/menu_export"
+          android:icon="@drawable/ic_menu_edit"
+          android:title="export"/>
+    <item android:id="@+id/menu_background"
+          android:icon="@drawable/ic_menu_edit"
+          android:title="background"/>
 
 </menu>
