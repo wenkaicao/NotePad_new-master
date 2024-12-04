@@ -25,7 +25,22 @@ NotepadMaster 是一款基于 Google Notepad Master 开发的安卓笔记应用�
    - 
 **实现代码**
     -主要是将修改时间从sqlite数据库中读取，然后映射到笔记中，这里只展示获取时间戳和转换时间格式的代码
-    1、 为了将时间戳以友好的格式显示，需要进行自定义绑定。在这里，使用了 SimpleCursorAdapter 将数据库中的列映射到视图上的对应位置：
+
+     布局文件中展示时间戳的TextView
+     ```
+     <TextView
+        android:id="@android:id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_gravity="center_vertical"
+        android:textColor="#BBBBBB"
+        android:textSize="15sp"
+        android:paddingLeft="5dp"
+        android:singleLine="true"/>
+     ```
+     
+     为了将时间戳以友好的格式显示，需要进行自定义绑定。在这里，使用了 SimpleCursorAdapter 将数据库中的列映射到视图上的对应位置：
 ``` java
 String[] dataColumns = {
     NotePad.Notes.COLUMN_NAME_TITLE,              // 标题
@@ -38,7 +53,7 @@ int[] viewIDs = {
     R.id.content           // 映射内容
 };
  ```
-2、将 SimpleCursorAdapter 绑定到 ListView 后，通过 setViewBinder 方法实现自定义显示修改时间的逻辑：
+将 SimpleCursorAdapter 绑定到 ListView 后，通过 setViewBinder 方法实现自定义显示修改时间的逻辑：
 ``` java
 adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
     @Override
@@ -55,7 +70,7 @@ adapter.setViewBinder(new SimpleCursorAdapter.ViewBinder() {
     }
 });
 ```
-3、 格式化时间戳
+ 格式化时间戳
 在 setViewBinder() 中，调用 formatDate() 方法将时间戳转换为易读的日期格式：
 
 ``` java
