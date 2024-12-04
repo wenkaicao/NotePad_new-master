@@ -24,10 +24,10 @@ NotepadMaster 是一款基于 Google Notepad Master 开发的安卓笔记应用�
    - 使用 SQLite 存储笔记内容和时间戳信息，并在笔记列表中动态加载显示。
    - 
 **实现代码**
-    -主要是将修改时间从sqlite数据库中读取，然后映射到笔记中，这里只展示获取时间戳和转换时间格式的代码
+    -主要是将修改时间从sqlite数据库中读取，然后映射到笔记中，这里只展示获取时间戳和转换时间格式的代码。
+     布局文件中展示时间戳的TextView。
+     
 
-     布局文件中展示时间戳的TextView
-     ```
      <TextView
         android:id="@android:id/text2"
         android:layout_width="wrap_content"
@@ -38,9 +38,8 @@ NotepadMaster 是一款基于 Google Notepad Master 开发的安卓笔记应用�
         android:textSize="15sp"
         android:paddingLeft="5dp"
         android:singleLine="true"/>
-     ```
-     
-     为了将时间戳以友好的格式显示，需要进行自定义绑定。在这里，使用了 SimpleCursorAdapter 将数据库中的列映射到视图上的对应位置：
+
+为了将时间戳以友好的格式显示，需要进行自定义绑定。在这里，使用了 SimpleCursorAdapter 将数据库中的列映射到视图上的对应位置：
 ``` java
 String[] dataColumns = {
     NotePad.Notes.COLUMN_NAME_TITLE,              // 标题
@@ -83,7 +82,8 @@ private String formatDate(long timestamp) {
 ```
 **功能截图**
 
-![image](https://github.com/user-attachments/assets/d9d09f6d-8bf7-4ce0-80a4-dee00b1d69fb)
+![image](https://github.com/user-attachments/assets/82ec2449-e4a0-4584-b126-5a9f5ebaeb69)
+
 ---------------------------------------------------------------------------------------------------------
 
 
@@ -96,7 +96,10 @@ private String formatDate(long timestamp) {
    - 搜索结果会实时更新，并通过 Cursor 加载数据到 UI 层展示。
      
 **代码实现**
-1. 触发搜索功能的菜单项
+1. 传递搜索查询参数
+搜索查询的触发来自 onOptionsItemSelected 方法中的 "搜索" 选项。点击这个选项时，会弹出一个对话框，让用户输入搜索关键字。
+
+代码段：搜索功能触发
 ``` java
 case R.id.menu_search:
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -122,25 +125,65 @@ case R.id.menu_search:
     builder.show();
     return true;
 ```
-2. 处理搜索关键字
+当点击搜索菜单项时，AlertDialog 弹出一个输入框，让用户输入搜索关键字。
+用户输入的内容通过 input.getText().toString().trim() 获取并存储到 searchQuery 变量中。
+如果用户输入的内容非空，则通过 Intent 将 searchQuery 传递到 NotesList 类，启动一个新的 NotesList 活动并执行搜索操作。
+如果没有输入内容，显示一个 Toast 提示，要求用户输入搜索内容
+
+2.  根据搜索条件筛选数据库记录
+在 NotesList 的 onCreate 方法中，通过检查 Intent 是否包含搜索查询（searchQuery），如果包含搜索内容，则根据该内容在数据库中筛选标题进行搜索。
+
+代码段：执行查询并根据标题进行过滤
 ``` java
 String searchQuery = getIntent().getStringExtra("searchQuery");
-```
-这个代码用于在 NotesList 的 onCreate 方法中获取传递来的 searchQuery，即用户输入的搜索关键字。
 
-3. 根据关键字执行查询
-``` java
-String selection = null;
-String[] selectionArgs = null;
 if (searchQuery != null && !searchQuery.isEmpty()) {
     selection = NotePad.Notes.COLUMN_NAME_TITLE + " LIKE ?"; // 根据标题过滤
     selectionArgs = new String[]{"%" + searchQuery + "%"}; // 搜索关键字
 }
+
+```
+getIntent().getStringExtra("searchQuery") 获取传递过来的 searchQuery 参数。
+如果 searchQuery 非空，则设置 selection 为 "COLUMN_NAME_TITLE LIKE ?"，即 SQL 的 WHERE 子句，通过标题进行模糊匹配。
+selectionArgs 设置为 {"%" + searchQuery + "%"}，这里的 % 是 SQL 中的通配符，表示标题中可以包含搜索关键字的任何位置。
+
+3. 执行查询并绑定数据
+接下来，使用 managedQuery() 方法执行查询，并根据传入的 selection 和 selectionArgs 过滤数据。
+
+代码段：执行查询
+``` java
+Cursor cursor = managedQuery(
+    getIntent().getData(),                // 使用默认内容URI
+    PROJECTION,                           // 返回的列
+    selection,                            // 设置筛选条件
+    selectionArgs,                        // 设置筛选条件的参数
+    NotePad.Notes.DEFAULT_SORT_ORDER      // 默认排序
+);
+
+```
+getIntent().getData() 返回查询的 URI，通常是 NotePad.Notes.CONTENT_URI。
+PROJECTION 是返回的列，这里包含了笔记的 ID、标题、修改时间 和 内容。
+selection 和 selectionArgs 是过滤条件，selection 指定了根据标题进行模糊匹配。
+NotePad.Notes.DEFAULT_SORT_ORDER 是默认的排序顺序，通常是按时间排序。
+查询完成后，结果会存储在 Cursor 中，并通过 SimpleCursorAdapter 将其绑定到 ListView 中。
+
+代码段：设置适配器和视图
+```java
+SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+    this,
+    R.layout.noteslist_item,
+    cursor,
+    dataColumns,
+    viewIDs
+);
 ```
 
+通过 SimpleCursorAdapter，查询结果（cursor）中的每一行数据会映射到 noteslist_item 布局文件中的控件（如标题、修改时间、内容等）。搜索结果会实时更新并显示在列表中。
 **功能截图**
 
-![image](https://github.com/user-attachments/assets/f19568e6-63ef-4618-b4f8-6791338995f5)
+![image](https://github.com/user-attachments/assets/e53763e1-2117-49fd-8672-130311a17709)![image](https://github.com/user-attachments/assets/594d9da0-8b2b-4fe7-a0f3-71e1dbf13def)
+
+
 --------------------------------------------------------------------------------------------
 
 ### UI美化
