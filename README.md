@@ -25,7 +25,8 @@ NotepadMaster 是一款基于 Google Notepad Master 开发的安卓笔记应用�
    - 
 **实现代码**
     -主要是将修改时间从sqlite数据库中读取，然后映射到笔记中，这里只展示获取时间戳和转换时间格式的代码。
-     布局文件中展示时间戳的TextView。
+     
+     布局文件中展示时间戳的TextView：
      
 
      <TextView
@@ -96,7 +97,7 @@ private String formatDate(long timestamp) {
    - 搜索结果会实时更新，并通过 Cursor 加载数据到 UI 层展示。
      
 **代码实现**
-1. 传递搜索查询参数
+1. #### 传递搜索查询参数
 搜索查询的触发来自 onOptionsItemSelected 方法中的 "搜索" 选项。点击这个选项时，会弹出一个对话框，让用户输入搜索关键字。
 
 代码段：搜索功能触发
@@ -128,11 +129,10 @@ case R.id.menu_search:
 当点击搜索菜单项时，AlertDialog 弹出一个输入框，让用户输入搜索关键字。
 用户输入的内容通过 input.getText().toString().trim() 获取并存储到 searchQuery 变量中。
 如果用户输入的内容非空，则通过 Intent 将 searchQuery 传递到 NotesList 类，启动一个新的 NotesList 活动并执行搜索操作。
-如果没有输入内容，显示一个 Toast 提示，要求用户输入搜索内容
+如果没有输入内容，显示一个 Toast 提示，要求用户输入搜索内容。
 
-2.  根据搜索条件筛选数据库记录
+2. #### 根据搜索条件筛选数据库记录
 在 NotesList 的 onCreate 方法中，通过检查 Intent 是否包含搜索查询（searchQuery），如果包含搜索内容，则根据该内容在数据库中筛选标题进行搜索。
-
 代码段：执行查询并根据标题进行过滤
 ``` java
 String searchQuery = getIntent().getStringExtra("searchQuery");
@@ -147,9 +147,8 @@ getIntent().getStringExtra("searchQuery") 获取传递过来的 searchQuery 参�
 如果 searchQuery 非空，则设置 selection 为 "COLUMN_NAME_TITLE LIKE ?"，即 SQL 的 WHERE 子句，通过标题进行模糊匹配。
 selectionArgs 设置为 {"%" + searchQuery + "%"}，这里的 % 是 SQL 中的通配符，表示标题中可以包含搜索关键字的任何位置。
 
-3. 执行查询并绑定数据
+3. #### 执行查询并绑定数据
 接下来，使用 managedQuery() 方法执行查询，并根据传入的 selection 和 selectionArgs 过滤数据。
-
 代码段：执行查询
 ``` java
 Cursor cursor = managedQuery(
@@ -179,6 +178,7 @@ SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 ```
 
 通过 SimpleCursorAdapter，查询结果（cursor）中的每一行数据会映射到 noteslist_item 布局文件中的控件（如标题、修改时间、内容等）。搜索结果会实时更新并显示在列表中。
+
 **功能截图**
 
 ![image](https://github.com/user-attachments/assets/e53763e1-2117-49fd-8672-130311a17709)![image](https://github.com/user-attachments/assets/594d9da0-8b2b-4fe7-a0f3-71e1dbf13def)
@@ -191,12 +191,58 @@ SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 **功能描述**
 能够在笔记首页浏览到笔记内容开头
 
-**代码实现**
-因代码实现与时间戳功能类似，在此不再过多描述
+**实现原理**
+1、先在布局文件中创建一个TextView呈现内容。
+2、从contentProvider获取内容。
+3、将内容映射到界面中。
 
+**代码实现**
+展示内容的TextView组件，该控件将会用于显示 COLUMN_NAME_NOTE 中的笔记内容。
+<TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:gravity="center_vertical"
+            android:textColor="#AAAAAA"
+            android:textSize="15dp"
+            android:paddingLeft="5dip"
+            android:singleLine="true"/>
+
+ SimpleCursorAdapter 中的映射
+接着，在 NotesList Activity 中，通过 SimpleCursorAdapter 来绑定数据。在这段代码中，SimpleCursorAdapter 的构造函数将查询结果（即笔记的内容）映射到相应的视图控件：
+```java
+   SimpleCursorAdapter adapter = new SimpleCursorAdapter(
+    this,
+    R.layout.noteslist_item, // 使用上面定义的布局
+    cursor,                  // 从数据库查询到的 Cursor 对象
+    dataColumns,             // 映射的列：标题、修改时间和内容
+    viewIDs                  // 映射到的视图控件的 ID
+);
+```
+dataColumns 数组中包含了 COLUMN_NAME_NOTE，即笔记的内容列，它被映射到 viewIDs 数组中的 R.id.content，即上面布局文件中定义的 TextView 控件。
+
+```java
+String[] dataColumns = {
+    NotePad.Notes.COLUMN_NAME_TITLE,             // 映射标题
+    NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, // 映射修改时间
+    NotePad.Notes.COLUMN_NAME_NOTE               // 映射笔记内容
+};
+
+int[] viewIDs = {
+    android.R.id.text1,       // 映射标题到 text1
+    android.R.id.text2,       // 映射修改时间到 text2
+    R.id.content              // 映射笔记内容到自定义控件 content
+};
+```
+NotePad.Notes.COLUMN_NAME_NOTE 是数据库中的笔记内容列，它会被映射到 R.id.content（即布局文件中定义的 TextView）中，从而显示笔记内容。
+如何显示数据：
+当 SimpleCursorAdapter 设置完之后，它会自动处理查询结果，并将每一行数据绑定到对应的视图控件。
+对于 COLUMN_NAME_NOTE，它会将查询结果中每一行的笔记内容（即 NotePad.Notes.COLUMN_NAME_NOTE）绑定到布局中 R.id.content 控件中，展示在 UI 上。
 **功能截图**
 
-![image](https://github.com/user-attachments/assets/61d16988-d59a-4380-9687-80fbc9d62860)
+![image](https://github.com/user-attachments/assets/68c6e040-1a55-409c-a7fd-0436e4d3ad35)
+
 ------------------------------------------------------------------------------------------
 
 #### 更改笔记背景
@@ -292,6 +338,7 @@ protected void onRestoreInstanceState(Bundle savedInstanceState) {
     }
 }
 ```
+
 ***功能截图***
 
 ![image](https://github.com/user-attachments/assets/522c5c05-946f-4e7f-be01-037eabaebb86)
