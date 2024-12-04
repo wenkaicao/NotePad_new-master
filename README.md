@@ -251,6 +251,15 @@ NotePad.Notes.COLUMN_NAME_NOTE 是数据库中的笔记内容列，它会被映�
 在笔记界面中，可以选择更改笔记背景
 
 **代码实现**
+背景更改的按钮被放在笔记的菜单中：
+```
+<item android:id="@+id/menu_background"
+          android:icon="@drawable/ic_menu_edit"
+          android:title="background"/>
+ ```
+![image](https://github.com/user-attachments/assets/ccc532a3-f729-457e-a5c7-4235efd8d015)
+
+
 1. 展示背景选择对话框
 背景选择对话框让用户选择背景图片，并更新笔记编辑界面的背景。相关的代码部分在 showBackgroundImagePickerDialog() 方法中
 ``` java
@@ -344,6 +353,7 @@ protected void onRestoreInstanceState(Bundle savedInstanceState) {
 ![image](https://github.com/user-attachments/assets/522c5c05-946f-4e7f-be01-037eabaebb86)
 
 选择第二个湖的背景
+
 ![image](https://github.com/user-attachments/assets/0f3390d6-cde4-4c4d-a0f2-b24e59d70055)
 
 ---------------------------------------------------------------------------------------
@@ -354,6 +364,15 @@ protected void onRestoreInstanceState(Bundle savedInstanceState) {
 在笔记菜单中选择export功能，笔记将会被以.txt文件的形式导出至storage/download下
 
 **代码实现**
+导出功能的组件同样被放在笔记的菜单中：
+```
+<item android:id="@+id/menu_export"
+          android:icon="@drawable/ic_menu_edit"
+          android:title="export"/>
+```
+
+![image](https://github.com/user-attachments/assets/01de6ff3-3451-492f-86b6-1c10f0af7328)
+
 
 1. 文件导出功能的触发：
 导出功能通过 menu_export 选项在菜单中触发
