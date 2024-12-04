@@ -342,6 +342,10 @@ protected void onRestoreInstanceState(Bundle savedInstanceState) {
 ***功能截图***
 
 ![image](https://github.com/user-attachments/assets/522c5c05-946f-4e7f-be01-037eabaebb86)
+
+选择第二个湖的背景
+![image](https://github.com/user-attachments/assets/0f3390d6-cde4-4c4d-a0f2-b24e59d70055)
+
 ---------------------------------------------------------------------------------------
 
 ### 文件导出
