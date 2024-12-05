@@ -181,7 +181,9 @@ SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 同时，该搜索功能支持模糊搜索。
 **功能截图**
 
-![image](https://github.com/user-attachments/assets/e53763e1-2117-49fd-8672-130311a17709)![image](https://github.com/user-attachments/assets/594d9da0-8b2b-4fe7-a0f3-71e1dbf13def)
+![image](https://github.com/user-attachments/assets/6ce34adf-3d58-4b20-bd0b-850544f665a0)![image](https://github.com/user-attachments/assets/d795b600-0737-454a-a8e1-75787a8e77cc)
+
+
 
 
 --------------------------------------------------------------------------------------------
