@@ -178,7 +178,7 @@ SimpleCursorAdapter adapter = new SimpleCursorAdapter(
 ```
 
 通过 SimpleCursorAdapter，查询结果（cursor）中的每一行数据会映射到 noteslist_item 布局文件中的控件（如标题、修改时间、内容等）。搜索结果会实时更新并显示在列表中。
-
+同时，该搜索功能支持模糊搜索。
 **功能截图**
 
 ![image](https://github.com/user-attachments/assets/e53763e1-2117-49fd-8672-130311a17709)![image](https://github.com/user-attachments/assets/594d9da0-8b2b-4fe7-a0f3-71e1dbf13def)
